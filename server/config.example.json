@@ -1,0 +1,8 @@
+{
+  "_comment": "复制本文件为 config.json 并填入你的 QQ 机器人凭证(不要提交 config.json 到 Git)",
+  "appid": "你的QQ机器人AppID",
+  "appsecret": "你的QQ机器人AppSecret",
+  "api_key": "HTTP服务的鉴权Key(自定义随机串, 博客端也填同一个)",
+  "blog_api": "https://你的博客域名/teonotify-qq-comment.php",
+  "blog_key": "与博客安全接口一致的Key"
+}

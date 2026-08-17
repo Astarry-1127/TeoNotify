@@ -1,0 +1,8 @@
+# 敏感配置文件(绝不提交)
+config.json
+teo_notify_config.json
+*.local.json
+
+# 运行时
+__pycache__/
+*.pyc

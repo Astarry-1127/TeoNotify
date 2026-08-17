@@ -20,7 +20,7 @@ if (!interface_exists('Typecho_Plugin_Interface', false)) {
  *
  * @package TeoNotify
  * @author Astarry
- * @version 1.0.0
+ * @version 1.0.5
  * @link https://blog.astarry.cn
  * @license GNU General Public License 2.0
  */
@@ -79,6 +79,24 @@ class TeoNotify_Plugin implements Typecho_Plugin_Interface
 
         $adminMail = new Typecho_Widget_Helper_Form_Element_Text('admin_mail', null, '', _t('博主接收邮箱'), _t('新评论通知发往该邮箱, 留空则读取站点管理员邮箱'));
         $form->addInput($adminMail);
+
+        // ---- QQ 机器人通道(进阶) ----
+        $qqEnabled = new Typecho_Widget_Helper_Form_Element_Checkbox(
+            'qq_channel',
+            ['enable' => '启用 QQ 机器人通知(进阶, 需自建/半托管常驻服务)'],
+            [],
+            _t('QQ 机器人通道')
+        );
+        $form->addInput($qqEnabled);
+
+        $qqServer = new Typecho_Widget_Helper_Form_Element_Text('qq_server_url', null, '', _t('常驻服务地址'), _t('如 http://47.76.140.103:8970 (可半托管自制, 详见文档)'));
+        $form->addInput($qqServer);
+
+        $qqKey = new Typecho_Widget_Helper_Form_Element_Text('qq_api_key', null, '', _t('服务鉴权 Key'), _t('常驻服务要求的 X-API-Key'));
+        $form->addInput($qqKey);
+
+        $qqOpenid = new Typecho_Widget_Helper_Form_Element_Text('qq_openid', null, '', _t('接收者 openid'), _t('你的 QQ 先给机器人发消息, 从事件里获取 openid'));
+        $form->addInput($qqOpenid);
     }
 
     /**
@@ -162,9 +180,13 @@ class TeoNotify_Plugin implements Typecho_Plugin_Interface
     {
         $opt = Typecho_Widget::widget('Widget_Options')->plugin('TeoNotify');
         $data = [];
-        foreach (['notify_scope', 'mail_host', 'mail_port', 'mail_user', 'mail_pass', 'mail_from', 'admin_mail'] as $k) {
+        foreach (['notify_scope', 'mail_host', 'mail_port', 'mail_user', 'mail_pass', 'mail_from', 'admin_mail',
+                  'qq_channel', 'qq_server_url', 'qq_api_key', 'qq_openid'] as $k) {
             $data[$k] = $opt->{$k} ?? '';
         }
+        // qq_channel 是 checkbox: 数组, 含 'enable' 即启用
+        $qqc = $data['qq_channel'];
+        $data['qq_enabled'] = is_array($qqc) && in_array('enable', $qqc);
         return $data;
     }
 
