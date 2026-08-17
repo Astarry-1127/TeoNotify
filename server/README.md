@@ -66,15 +66,24 @@ python3 qq-ws-listener.py     # WebSocket 监听
 {
   "api_key": "与服务器 config.json 的 api_key 一致",
   "allow_ips": ["你的服务器公网IP"],
+  "reply_author": "你的显示名",
+  "site_name": "你的站点名",
   "smtp": {
-    "host": "smtp.qiye.aliyun.com",
+    "host": "smtp.example.com",
     "port": 465,
-    "user": "admin@example.cn",
+    "user": "you@example.com",
     "pass": "你的SMTP授权码",
-    "from": "admin@example.cn"
+    "from": "you@example.com"
   }
 }
 ```
+
+字段说明：
+- `reply_author`：QQ 回复发布评论时显示的**作者名**（如你的名字/昵称）
+- `site_name`：回复通知邮件里显示的**站点名**（留空则读取博客标题）
+- `owner_mail`（可选）：博客管理员邮箱；省略时自动使用 `smtp.from`
+- 以上字段不填会使用中性默认值，**开源代码本身不含任何作者个人信息**
+
 > SMTP 若省略，会回退读取 TeoNotify 插件后台配置的 SMTP。
 
 ### 3. 获取 openid
@@ -101,7 +110,7 @@ python3 qq-ws-listener.py     # WebSocket 监听
 ## 安全
 
 博客侧 `teonotify-qq-comment.php` 多重校验：
-- IP 白名单（REMOTE_ADDR，不可伪造）
+- IP 白名单（经 CDN 可信头取真实客户端 IP，如 `EO_CONNECTING_IP`）
 - `X-Notify-Key` API Key
 - HMAC-SHA256 签名（`ts|nonce|cid|content`）
 - 时间戳 + nonce 防重放
