@@ -1,11 +1,11 @@
 # TeoNotify - Teo 系列评论通知插件
 
-> **Teo 系列**的 Typecho 评论通知插件（搭配 [TeoSeo](https://github.com/Astarry-1127/TeoSeo) 使用）。
-> 适配 **Typecho 1.3**，在 `vincent了吗` 的留言基础之上，做成了"**邮件通知 + QQ 遥控回复评论**"的双通道方案。
+> **Teo 系列**的 Typecho 评论通知插件，推荐搭配作者另一款插件 [TeoSeo](https://github.com/Astarry-1127/TeoSeo) 使用。
+> 适配 **Typecho 1.3**，提供"**邮件通知 + QQ 遥控回复评论**"的双通道方案。
 
 ---
 
-## ✨ 核心卖点
+## ✨ 亮点
 
 **TeoNotify 不只是通知，还能让你"用 QQ 遥控博客回复评论"**：
 

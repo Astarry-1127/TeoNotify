@@ -1,6 +1,6 @@
 # TeoNotify - Teo 系列评论通知插件
 
-> **Teo 系列**的评论通知插件（搭配 [TeoSeo](https://github.com/Astarry-1127/TeoSeo) 使用）：适配 **Typecho 1.3**，邮件通知 + QQ 遥控回复评论。
+> **Teo 系列**的评论通知插件，推荐搭配作者另一款插件 [TeoSeo](https://github.com/Astarry-1127/TeoSeo) 使用：适配 **Typecho 1.3**，邮件通知 + QQ 遥控回复评论。
 
 ## 功能
 
