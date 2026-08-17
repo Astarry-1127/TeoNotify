@@ -36,6 +36,11 @@ if (is_file($_cfg_file)) {
 }
 $NOTIFY_KEY  = $_notify_cfg['api_key'] ?? 'CHANGE_ME';
 $ALLOW_IPS   = isset($_notify_cfg['allow_ips']) ? (array)$_notify_cfg['allow_ips'] : array('127.0.0.1');
+// 站点/作者个性化配置(请按自己的博客修改 teo_notify_config.json)
+$REPLY_AUTHOR = $_notify_cfg['reply_author']  ?? '博主';                       // 回复评论的显示作者名
+$OWNER_MAIL   = $_notify_cfg['owner_mail']    ?? ($_notify_cfg['smtp']['from'] ?? ''); // 博主邮箱(发件/author)
+$SITE_NAME    = $_notify_cfg['site_name']     ?? '我的博客';                   // 邮件站点名兜底
+$FALLBACK_URL = $_notify_cfg['site_url']      ?? '';                           // 站点地址兜底
 
 function fail($code, $msg) {
     http_response_code($code);
@@ -110,7 +115,8 @@ if ($ar && $arow = $ar->fetch_assoc()) {
 }
 $sr = $db->query("SELECT value FROM {$PREFIX}options WHERE name='siteUrl'");
 if ($sr && $srow = $sr->fetch_assoc()) $siteUrl = $srow['value'];
-if (!$siteUrl) $siteUrl = 'https://blog.astarry.cn/';
+if (!$siteUrl) $siteUrl = $FALLBACK_URL;
+if (!$siteUrl) $siteUrl = '';
 $articleUrl = rtrim($siteUrl, '/') . ($articleSlug ? '/' . $articleSlug . '/' : '');
 if (!$articleSlug) $articleUrl = rtrim($siteUrl, '/') . '/index.php/archives/' . $articleCid . '/';
 
@@ -124,14 +130,14 @@ if ($pr && $prow = $pr->fetch_assoc()) {
 // 7. 插入博主回复评论
 $tsNow = time();
 $r = $db->real_escape_string($content);
-$a = $db->real_escape_string('Astarry');
-$m = $db->real_escape_string('admin@astarry.cn');
+$a = $db->real_escape_string($REPLY_AUTHOR);
+$m = $db->real_escape_string($OWNER_MAIL);
 $sql = "INSERT INTO {$PREFIX}comments (cid,created,author,ownerId,mail,url,ip,agent,text,type,status,parent)
         VALUES ($articleCid, $tsNow, '$a', 1, '$m', '', '$clientIp', 'TeoNotify/QQ', '$r', 'comment', 'approved', " . intval($cid) . ")";
 if (!$db->query($sql)) fail(500, 'insert fail: ' . $db->error);
 $newId = $db->insert_id;
 
-// 8. 邮件通知原评论者(发件 admin@astarry.cn, 收件原评论者邮箱)
+// 8. 邮件通知原评论者(发件为博主邮箱, 收件原评论者邮箱)
 $mailSent = false;
 if (!empty($parentInfo['mail'])) {
     // SmtpClient 有 __TYPECHO_ROOT_DIR__ 守卫, 独立脚本先定义
@@ -163,7 +169,7 @@ if (!empty($parentInfo['mail'])) {
             error_log('[TeoNotify] SMTP 未配置, 无法发送回复通知');
         } else {
         // 站点名
-        $siteName = 'Astarry技术日记';
+        $siteName = $SITE_NAME;
         $st = $db->query("SELECT value FROM {$PREFIX}options WHERE name='title'");
         if ($st && $srow = $st->fetch_assoc()) $siteName = $srow['value'];
 
