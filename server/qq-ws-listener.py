@@ -100,6 +100,7 @@ def publish_comment(cid, content):
         BLOG_API, data=payload,
         headers={
             "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0 (TeoNotify/1.0)",
             "X-Notify-Key": BLOG_KEY,
             "X-Notify-Ts": ts,
             "X-Notify-Nonce": nonce,
