@@ -51,7 +51,20 @@ function okk($data = array()) {
 }
 
 // 1. IP 白名单
-$clientIp = $_SERVER['REMOTE_ADDR'] ?? '';
+// 站点在腾讯云 EdgeOne CDN 之后, REMOTE_ADDR 是 CDN 节点 IP(动态), 需从可信头取真实客户端 IP
+// 优先 EdgeOne 注入的 EO_CONNECTING_IP(可信, 客户端不可伪造), 回退 X_REAL_IP / X_FORWARDED_FOR / REMOTE_ADDR
+$clientIp = $_SERVER['HTTP_EO_CONNECTING_IP'] ?? '';
+if (!$clientIp) $clientIp = $_SERVER['HTTP_X_REAL_IP'] ?? '';
+if (!$clientIp) {
+    // 仅当无 CDN 时取 REMOTE_ADDR; 若经 CDN 但无可信头, 取 X_FORWARDED_FOR 首段
+    $xff = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
+    if ($xff) {
+        $parts = explode(',', $xff);
+        $clientIp = trim($parts[0]);
+    } else {
+        $clientIp = $_SERVER['REMOTE_ADDR'] ?? '';
+    }
+}
 if (!in_array($clientIp, $ALLOW_IPS)) fail(403, 'ip not allowed: ' . $clientIp);
 
 // 2. API Key
@@ -97,7 +110,7 @@ if ($ar && $arow = $ar->fetch_assoc()) {
 }
 $sr = $db->query("SELECT value FROM {$PREFIX}options WHERE name='siteUrl'");
 if ($sr && $srow = $sr->fetch_assoc()) $siteUrl = $srow['value'];
-if (!$siteUrl) $siteUrl = 'https://www.astarry.top/';
+if (!$siteUrl) $siteUrl = 'https://blog.astarry.cn/';
 $articleUrl = rtrim($siteUrl, '/') . ($articleSlug ? '/' . $articleSlug . '/' : '');
 if (!$articleSlug) $articleUrl = rtrim($siteUrl, '/') . '/index.php/archives/' . $articleCid . '/';
 
