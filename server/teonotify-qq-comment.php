@@ -124,7 +124,7 @@ if ($pr && $prow = $pr->fetch_assoc()) {
 // 7. 插入博主回复评论
 $tsNow = time();
 $r = $db->real_escape_string($content);
-$a = $db->real_escape_string('博主Astarry');
+$a = $db->real_escape_string('Astarry');
 $m = $db->real_escape_string('admin@astarry.cn');
 $sql = "INSERT INTO {$PREFIX}comments (cid,created,author,ownerId,mail,url,ip,agent,text,type,status,parent)
         VALUES ($articleCid, $tsNow, '$a', 1, '$m', '', '$clientIp', 'TeoNotify/QQ', '$r', 'comment', 'approved', " . intval($cid) . ")";
